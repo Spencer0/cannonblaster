@@ -116,7 +116,7 @@ function drawBackground(){
 
   function drawInstructions(){
     ctx.font = "12px Arial";
-    ctx.fillText("Hold Spaccebar to charge your cannon", width *.01, height*.05);
+    ctx.fillText("Hold Spacebar to charge your cannon", width *.01, height*.05);
   } 
 
   function drawGround(){
