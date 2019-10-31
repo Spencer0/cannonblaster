@@ -91,7 +91,7 @@ function drawLayover(){
     ctx.fillRect(width * starting_spot, height *.8, width*.05, height*.01)
     ctx.fillStyle = 'rgb(255, 255, 255)'
     ctx.fillRect(width * starting_spot +5, height *.8+5, width*.05-10, height*.01-10)
-    target_value = width * starting_spot;
+    target_value = width * starting_spot +5;
   }
 
   function drawScore(){
@@ -100,6 +100,7 @@ function drawLayover(){
   }
 
 }
+
 function drawBackground(){
   canvas = document.getElementById('background');
   ctx = canvas.getContext('2d');
