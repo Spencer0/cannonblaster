@@ -17,9 +17,8 @@ function fix_dpi(can){
 function init(){
   drawBackground()
   drawUserInterface()
+  drawLayover()
 }
-
-
 
 function drawUserInterface(){
   canvas = document.getElementById('ui-layer');
@@ -30,25 +29,6 @@ function drawUserInterface(){
   var charging = false;
   var chargingIntervalId = 0;
   drawPowerBar()
-  drawScore()
-  drawTarget()
-
-  function drawTarget(){
-    starting_spot = Math.random()
-    while(starting_spot < .25 || starting_spot > .85){
-      starting_spot = Math.random()
-    }
-    ctx.fillStyle = 'rgb(255, 51, 0)'
-    ctx.fillRect(width * starting_spot, height *.8, width*.05, height*.01)
-    ctx.fillStyle = 'rgb(255, 255, 255)'
-    ctx.fillRect(width * starting_spot +5, height *.8+5, width*.05-10, height*.01-10)
-    target_value = width * starting_spot;
-  }
-
-  function drawScore(){
-    ctx.font = "12px Arial";
-    ctx.fillText("Confirmed Kills: " + score, width *.8, height*.05);
-  }
 
   function drawPowerBar(){
     ctx.fillStyle = 'rgb(255, 51, 0)'
@@ -73,7 +53,7 @@ function drawUserInterface(){
 
   function consumePowerbar(){
     clearInterval(chargingIntervalId)
-    drawGameplay(chargeValue*3)
+    drawCannonball(chargeValue*3)
     chargeValue = 0;
     drawPowerBar()
   }
@@ -95,7 +75,31 @@ function drawUserInterface(){
   });
 }
 
+function drawLayover(){
+  var canvas = document.getElementById('layover-layer');
+  var ctx = canvas.getContext('2d');
+  fix_dpi(canvas)
+  drawTarget()
+  drawScore()
 
+  function drawTarget(){
+    starting_spot = Math.random()
+    while(starting_spot < .25 || starting_spot > .85){
+      starting_spot = Math.random()
+    }
+    ctx.fillStyle = 'rgb(255, 51, 0)'
+    ctx.fillRect(width * starting_spot, height *.8, width*.05, height*.01)
+    ctx.fillStyle = 'rgb(255, 255, 255)'
+    ctx.fillRect(width * starting_spot +5, height *.8+5, width*.05-10, height*.01-10)
+    target_value = width * starting_spot;
+  }
+
+  function drawScore(){
+    ctx.font = "12px Arial";
+    ctx.fillText("Confirmed Kills: " + score, width *.8, height*.05);
+  }
+
+}
 function drawBackground(){
   canvas = document.getElementById('background');
   ctx = canvas.getContext('2d');
@@ -137,11 +141,8 @@ function drawBackground(){
 
 }
 
-function drawGameplay(power){
-  window.cancelAnimationFrame(raf);
-  console.log("Shooting ball with power", power)
+function drawCannonball(power){
   actual_power = (width / 7500) * (power / 2) 
-  console.log("Shooting ball with power", actual_power)
   var canvas = document.getElementById('game-layer');
   var ctx = canvas.getContext('2d');
   fix_dpi(canvas)
@@ -163,31 +164,29 @@ function drawGameplay(power){
     }
   }
 
-    function draw() {
-      ctx.clearRect(0,0, canvas.width, canvas.height);
-      cannonball.draw();
-      console.log("Ball speed", cannonball.vx)
-      cannonball.x += cannonball.vx;
-      cannonball.y += cannonball.vy;
-      cannonball.vy *= .99;
-      cannonball.vy += .25;
-      raf = window.requestAnimationFrame(draw);
-      if(cannonball.x-(cannonball.radius*2) > width || cannonball.y-(cannonball.radius*2) > height){
+  function draw() {
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+    //console.log("drawing ball")
+    cannonball.draw();
+    cannonball.x += cannonball.vx;
+    cannonball.y += cannonball.vy;
+    cannonball.vy *= .99;
+    cannonball.vy += .25;
+    raf = window.requestAnimationFrame(draw)
+  
+    //console.log("About to pass the ground", cannonball.y, height)
+    if(cannonball.y > height * .8 - 5 && cannonball.y < height * .8 + 5){
+      console.log("Passed ground")
+      if(cannonball.x > target_value && cannonball.x < target_value + width*.05+10){
+        console.log("victory")
+        score++;
+        drawLayover()
         window.cancelAnimationFrame(raf);
       }
-
-
-      if(cannonball.x > target_value && cannonball.x < target_value + width*.05+10 ){
-        console.log("Matching x values")
-        if(cannonball.y > height * .8 - 8 && cannonball.y < height * .8 + 8){
-          console.log("victory")
-          score++;
-          window.cancelAnimationFrame(raf);
-          drawUserInterface()
-        }
-      }
+      window.cancelAnimationFrame(raf);
     }
-
-    cannonball.draw()
-    draw()
-};
+  }
+  
+  cannonball.draw()
+  draw()
+}

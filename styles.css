@@ -9,6 +9,7 @@ canvas { position: absolute;
 		width: 80%;
 		height: 60%;
 		margin-left: 10%; }
-#ui-layer { z-index: 3; }
+#ui-layer { z-index: 4; }
 #game-layer { z-index: 2; }
 #background { z-index: 1; }
+#layover-layer{ z-index: 3; }
